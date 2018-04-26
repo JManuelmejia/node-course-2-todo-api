@@ -8,6 +8,7 @@ var {ObjectID} = require('mongodb')
 
 
 var app = express();
+var port = process.env.PORT || 3000;                             //Linea para desplegar app en heroku
 
 app.use(bodyParser.json());
 
@@ -48,8 +49,8 @@ app.get('/todos/:id', (req, res) => {
     })
 });
 
-app.listen(3000, () => {
-    console.log('started on port 3000');
+app.listen(port, () => {
+    console.log(`Started up on port ${port}`);
 });
 
 
