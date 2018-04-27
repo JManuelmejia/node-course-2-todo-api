@@ -69,7 +69,7 @@ app.delete('/todos/:id', (req, res) =>{
     })
 })
 
-//Editar todo
+//Editar  
 app.patch('/todos/:id', (req, res) =>{
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);             //Ingresa las propiedades al objeto
@@ -82,7 +82,7 @@ app.patch('/todos/:id', (req, res) =>{
         body.completedAt = new Date().getTime();
     }else{
         body.completed = false;
-        body.completed = null;
+        body.completedAt = null;
     }
 
     Todo.findByIdAndUpdate(id,{$set: body},{new: true }).then ((todo) => {
@@ -91,7 +91,7 @@ app.patch('/todos/:id', (req, res) =>{
         }
 
         res.send({todo});
-        
+
     }).catch((e) => {
         res.status(400).send();
     });
