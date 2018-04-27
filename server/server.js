@@ -71,7 +71,7 @@ app.delete('/todos/:id', (req, res) =>{
     })
 })
 
-//Editar  
+//Editar  by ID
 app.patch('/todos/:id', (req, res) =>{
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);             //Ingresa las propiedades al objeto
@@ -99,6 +99,26 @@ app.patch('/todos/:id', (req, res) =>{
     });
     
 } )
+
+//Peticion POST Para nuevos usuarios POST /user
+
+app.post('/users', (req, res) => {
+
+    var body = _.pick(req.body,['email','password']);
+
+    var user = new Users(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+       res.header('x-auth', token).send(user);
+    }).catch( (e) =>{
+        res.status(400).send(e);
+    });
+
+})
+
+
 
 app.listen(port, () => {
     console.log(`Started up on port ${port}`);
