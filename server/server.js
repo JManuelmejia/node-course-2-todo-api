@@ -1,6 +1,7 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var {mongoose} = require('./db/mongoose.js');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {mongoose} = require('./db/mongoose.js');
 
 var {Todo} = require('./models/todo');
 var {Users} = require('./models/users');
@@ -12,6 +13,7 @@ var port = process.env.PORT || 3000;                             //Linea para de
 
 app.use(bodyParser.json());
 
+//Crear todos
 app.post('/todos', (req, res) => {
     var todo = new Todo({
         text: req.body.text
@@ -25,6 +27,7 @@ app.post('/todos', (req, res) => {
 
 });
 
+//Encontrar todos
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
@@ -33,6 +36,7 @@ app.get('/todos', (req, res) => {
     })
 });
 
+//Encontrar Todo por ID
 app.get('/todos/:id', (req, res) => {
     var id = req.params.id;
     if (!ObjectID.isValid(id)){
@@ -49,6 +53,7 @@ app.get('/todos/:id', (req, res) => {
     })
 });
 
+//Borrar Todo by ID
 app.delete('/todos/:id', (req, res) =>{
     var id = req.params.id;
     if (!ObjectID.isValid(id)){
@@ -63,6 +68,35 @@ app.delete('/todos/:id', (req, res) =>{
         res.status(404).send();
     })
 })
+
+//Editar todo
+app.patch('/todos/:id', (req, res) =>{
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']);             //Ingresa las propiedades al objeto
+
+    if (!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+
+    if (_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false;
+        body.completed = null;
+    }
+
+    Todo.findByIdAndUpdate(id,{$set: body},{new: true }).then ((todo) => {
+        if (!todo){
+            return res.status(400).send()
+        }
+
+        res.send({todo});
+        
+    }).catch((e) => {
+        res.status(400).send();
+    });
+    
+} )
 
 app.listen(port, () => {
     console.log(`Started up on port ${port}`);
