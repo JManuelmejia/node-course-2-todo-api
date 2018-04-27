@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -33,6 +34,7 @@ var UserShema = new mongoose.Schema({
     }]
 });
 
+//metodo para solo mostrar id y email como respuesta al usuario
 UserShema.methods.toJSON = function () {
 
     var user =  this;
@@ -42,7 +44,7 @@ UserShema.methods.toJSON = function () {
     return _.pick(userObject, ['_id', 'email']);
 };
 
-//Para crear metodos
+//metodo para crear tokens
 UserShema.methods.generateAuthToken = function () {
     var user = this;
     var access = 'auth';
@@ -52,6 +54,27 @@ UserShema.methods.generateAuthToken = function () {
 
     return user.save().then(() =>{                                          //?????
         return token;
+    })
+};
+
+UserShema.statics.findByToken = function (token) {
+    var User = this;
+    var decoded;
+
+    try{
+        decoded = jwt.verify(token, 'abc123');
+    }catch (e) {
+
+        return Promise.reject();
+        // return new promise((resolve, reject) =>{
+        //    reject(); 
+        
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
     })
 };
 
