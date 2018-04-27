@@ -1,3 +1,5 @@
+require('./config/config.js')
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,7 +11,7 @@ var {ObjectID} = require('mongodb')
 
 
 var app = express();
-var port = process.env.PORT || 3000;                             //Linea para desplegar app en heroku
+var port = process.env.PORT;                             //Linea para desplegar app en heroku
 
 app.use(bodyParser.json());
 
